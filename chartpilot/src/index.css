@@ -1,0 +1,324 @@
+/* ── ChartPilot — Global Styles ── */
+
+:root {
+  --bg-base: #0f1720;
+  --bg-surface: #111c28;
+  --bg-elevated: #162536;
+  --border: #243345;
+  --border-active: #4e81b7;
+  --text: #e7edf5;
+  --text-muted: #7a8da1;
+  --accent: #4e81b7;
+  --accent-hover: #5e94cc;
+  --danger: #d44040;
+
+  font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg-base);
+}
+
+[data-theme='light'] {
+  --bg-base: #f3f5f8;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f8f9fb;
+  --border: #dce2ea;
+  --border-active: #3574b0;
+  --text: #1a2332;
+  --text-muted: #65748a;
+  --accent: #3574b0;
+  --accent-hover: #2c6399;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── App Grid ── */
+
+.cp-app {
+  display: grid;
+  grid-template-columns: 200px 1fr 300px;
+  height: 100%;
+  transition: grid-template-columns 0.2s ease;
+}
+
+.cp-app.panel-closed {
+  grid-template-columns: 200px 1fr;
+}
+
+/* ── Left Rail ── */
+
+.cp-left-rail {
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  transition: width 0.2s ease;
+  overflow: hidden;
+}
+
+.cp-left-rail.collapsed {
+  width: 56px;
+}
+
+.cp-logo {
+  padding: 16px 16px 12px;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.3px;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+
+.cp-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+}
+
+.cp-rail-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cp-rail-item:hover {
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+
+.cp-rail-item.active {
+  background: var(--bg-elevated);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── Top Bar ── */
+
+.cp-topbar {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  height: 52px;
+  gap: 12px;
+}
+
+.cp-topbar-left,
+.cp-topbar-center,
+.cp-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cp-title-input {
+  width: 260px;
+  max-width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.cp-title-input:hover,
+.cp-title-input:focus {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+  outline: none;
+}
+
+.cp-topbar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+/* ── Icon Buttons ── */
+
+.cp-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cp-icon-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+
+.cp-icon-btn.accent {
+  color: var(--accent);
+}
+
+.cp-icon-btn.accent:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ── Main Content ── */
+
+.cp-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.cp-content {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+}
+
+/* ── Properties Panel ── */
+
+.cp-properties {
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* ── Panel Component ── */
+
+.cp-panel {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+
+.cp-panel-header {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+}
+
+.cp-panel-body {
+  padding: 14px;
+}
+
+/* ── Empty State ── */
+
+.cp-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  gap: 8px;
+  color: var(--text-muted);
+}
+
+.cp-empty-state h2 {
+  font-size: 18px;
+  color: var(--text);
+  margin-top: 8px;
+}
+
+.cp-empty-icon {
+  opacity: 0.3;
+}
+
+/* ── Buttons ── */
+
+.cp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.cp-btn:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-active);
+}
+
+.cp-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  margin-top: 8px;
+}
+
+.cp-btn.primary:hover {
+  background: var(--accent-hover);
+}
+
+/* ── Utility ── */
+
+.cp-muted {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 1100px) {
+  .cp-app {
+    grid-template-columns: 56px 1fr;
+  }
+  .cp-app.panel-closed {
+    grid-template-columns: 56px 1fr;
+  }
+  .cp-properties {
+    display: none;
+  }
+  .cp-rail-item span {
+    display: none;
+  }
+  .cp-logo {
+    text-align: center;
+    padding: 16px 4px 12px;
+  }
+}
