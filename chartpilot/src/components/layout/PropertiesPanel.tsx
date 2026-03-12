@@ -12,6 +12,8 @@ const CHART_LABELS: Record<ChartType, string> = {
   doughnut: 'Doughnut',
   radar: 'Radar',
   scatter: 'Scatter',
+  text: 'Text / KPI',
+  table: 'Table',
 };
 
 export default function PropertiesPanel() {
