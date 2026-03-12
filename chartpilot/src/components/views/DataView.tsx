@@ -9,6 +9,7 @@ const TYPE_LABELS: Record<string, string> = {
   manual: 'Manual',
   csv: 'CSV',
   api: 'API',
+  dataverse: 'Dataverse',
 };
 
 export default function DataView() {

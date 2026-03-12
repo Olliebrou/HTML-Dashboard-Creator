@@ -6,13 +6,14 @@ import Modal from '../common/Modal';
 import type { DataSource, DataSourceType, DataRow } from '../../types';
 import { useDashboardStore } from '../../stores/dashboardStore';
 import { parseCSV } from '../../lib/csvParser';
+import { parseDataverseJson } from '../../lib/dataverseParser';
 
 interface Props {
   existing?: DataSource;
   onClose: () => void;
 }
 
-type Tab = 'manual' | 'csv' | 'api';
+type Tab = 'manual' | 'csv' | 'api' | 'dataverse';
 
 const MANUAL_PLACEHOLDER = `Month,Sales,Expenses
 Jan,65,40
@@ -43,6 +44,12 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
   const [apiError, setApiError] = useState<string>('');
   const [fetching, setFetching] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [dataverseUrl, setDataverseUrl] = useState(existing?.dataverseUrl ?? '');
+  const [dataverseJson, setDataverseJson] = useState<string>(
+    existing?.type === 'dataverse'
+      ? serializeDataverseRows(existing.columns, existing.rows)
+      : '',
+  );
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((file: File) => {
@@ -96,6 +103,24 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
         rows,
         lastFetched: new Date().toISOString(),
       };
+    } else if (tab === 'dataverse') {
+      const { columns, rows, error } = parseDataverseJson(dataverseJson);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      if (columns.length === 0) {
+        toast.error('No data found. Please paste a valid Dataverse API response.');
+        return;
+      }
+      dsData = {
+        name: finalName,
+        type: 'dataverse',
+        columns,
+        rows,
+        dataverseUrl: dataverseUrl.trim() || undefined,
+        lastFetched: new Date().toISOString(),
+      };
     } else {
       dsData = {
         name: finalName,
@@ -120,6 +145,7 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
     { id: 'manual', label: 'Manual / CSV Text' },
     { id: 'csv', label: 'CSV File Upload' },
     { id: 'api', label: 'API / URL' },
+    { id: 'dataverse', label: 'Dataverse' },
   ];
 
   return (
@@ -235,6 +261,38 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
         </div>
       )}
 
+      {tab === 'dataverse' && (
+        <div className="cp-form-section">
+          <label className="cp-form-label" htmlFor="dv-url">
+            Dataverse Environment URL{' '}
+            <span className="cp-muted">— optional, for reference only</span>
+          </label>
+          <input
+            id="dv-url"
+            className="cp-input"
+            placeholder="https://yourorg.crm.dynamics.com"
+            value={dataverseUrl}
+            onChange={(e) => setDataverseUrl(e.target.value)}
+          />
+          <label className="cp-form-label" style={{ marginTop: 12 }}>
+            Paste API Response JSON
+          </label>
+          <textarea
+            className="cp-textarea"
+            rows={10}
+            placeholder={`Paste the JSON output from your Dataverse API call here.\n\nSupports:\n• OData envelope: { "value": [...] }\n• Plain JSON array: [{ ... }, ...]`}
+            value={dataverseJson}
+            onChange={(e) => setDataverseJson(e.target.value)}
+            spellCheck={false}
+          />
+          <p className="cp-muted" style={{ marginTop: 8 }}>
+            To avoid authentication issues, copy the response from a tool like Postman, Power Automate,
+            or the Dataverse Web API browser and paste it above.
+            OData metadata fields (starting with <code>@</code>) are automatically excluded.
+          </p>
+        </div>
+      )}
+
       <div className="cp-modal-footer">
         <button className="cp-btn" onClick={onClose}>Cancel</button>
         <button className="cp-btn primary" onClick={handleSave}>
@@ -255,4 +313,16 @@ function serializeRows(columns: string[], rows: DataRow[]): string {
     }).join(','));
   }
   return lines.join('\n');
+}
+
+function serializeDataverseRows(columns: string[], rows: DataRow[]): string {
+  if (columns.length === 0) return '';
+  const records = rows.map((row) => {
+    const obj: Record<string, string | number> = {};
+    for (const col of columns) {
+      obj[col] = row[col] ?? '';
+    }
+    return obj;
+  });
+  return JSON.stringify({ value: records }, null, 2);
 }

@@ -1,7 +1,7 @@
 export type AppView = 'dashboard' | 'data' | 'code';
 
 export type ChartType = 'bar' | 'line' | 'pie' | 'doughnut' | 'radar' | 'scatter';
-export type DataSourceType = 'manual' | 'csv' | 'api';
+export type DataSourceType = 'manual' | 'csv' | 'api' | 'dataverse';
 
 export interface DataRow {
   [key: string]: string | number;
@@ -14,6 +14,7 @@ export interface DataSource {
   columns: string[];
   rows: DataRow[];
   apiUrl?: string;
+  dataverseUrl?: string;
   lastFetched?: string;
 }
 
