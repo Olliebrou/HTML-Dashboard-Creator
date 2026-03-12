@@ -75,14 +75,11 @@ export default function ChartWidget({ widget, dataSources }: Props) {
     [widget, dataSources],
   );
 
-  const baseOpts = BASE_OPTIONS;
-  const scalesOpts = { ...BASE_OPTIONS };
-
   switch (widget.type) {
     case 'bar':
-      return <Bar data={data as Parameters<typeof Bar>[0]['data']} options={scalesOpts as ChartOptions<'bar'>} />;
+      return <Bar data={data as Parameters<typeof Bar>[0]['data']} options={BASE_OPTIONS as ChartOptions<'bar'>} />;
     case 'line':
-      return <Line data={data as Parameters<typeof Line>[0]['data']} options={scalesOpts as ChartOptions<'line'>} />;
+      return <Line data={data as Parameters<typeof Line>[0]['data']} options={BASE_OPTIONS as ChartOptions<'line'>} />;
     case 'pie':
       return <Pie data={data as Parameters<typeof Pie>[0]['data']} options={POLAR_OPTIONS as ChartOptions<'pie'>} />;
     case 'doughnut':
@@ -90,7 +87,7 @@ export default function ChartWidget({ widget, dataSources }: Props) {
     case 'radar':
       return <Radar data={data as Parameters<typeof Radar>[0]['data']} options={RADAR_OPTIONS as ChartOptions<'radar'>} />;
     case 'scatter':
-      return <Scatter data={data as Parameters<typeof Scatter>[0]['data']} options={baseOpts as ChartOptions<'scatter'>} />;
+      return <Scatter data={data as Parameters<typeof Scatter>[0]['data']} options={BASE_OPTIONS as ChartOptions<'scatter'>} />;
     default:
       return null;
   }

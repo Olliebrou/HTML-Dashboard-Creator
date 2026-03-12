@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import type { DashboardState, DashboardSnapshot, WidgetConfig, WidgetLayout, DataSource } from '../types';
 
+const MAX_HISTORY_SIZE = 50;
+
 function newId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
@@ -22,7 +24,7 @@ function pushHistory(
   current: DashboardSnapshot,
 ): Pick<DashboardState, 'past' | 'future'> {
   return {
-    past: [...s.past.slice(-49), current],
+    past: [...s.past.slice(-(MAX_HISTORY_SIZE - 1)), current],
     future: [],
   };
 }
@@ -112,7 +114,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     set({
       ...previous,
       past: s.past.slice(0, -1),
-      future: [current, ...s.future.slice(0, 49)],
+      future: [current, ...s.future.slice(0, MAX_HISTORY_SIZE - 1)],
     });
   },
 
@@ -123,7 +125,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     const current = snapshot(s);
     set({
       ...next,
-      past: [...s.past.slice(-49), current],
+      past: [...s.past.slice(-(MAX_HISTORY_SIZE - 1)), current],
       future: s.future.slice(1),
     });
   },

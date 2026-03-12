@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { UploadCloud } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
+import { toast } from 'sonner';
 import Modal from '../common/Modal';
 import type { DataSource, DataSourceType, DataRow } from '../../types';
 import { useDashboardStore } from '../../stores/dashboardStore';
@@ -85,7 +86,7 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
     if (tab === 'manual' || tab === 'csv') {
       const { columns, rows, error } = parseCSV(csvText || MANUAL_PLACEHOLDER);
       if (error && columns.length === 0) {
-        alert(`Parse error: ${error}`);
+        toast.error(`CSV parse error: ${error}`);
         return;
       }
       dsData = {

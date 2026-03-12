@@ -24,7 +24,7 @@ export function parseCSV(text: string): ParseResult {
       const raw = values[i] ?? '';
       const trimmed = raw.trim();
       const num = Number(trimmed);
-      row[col] = trimmed !== '' && !isNaN(num) ? num : raw;
+      row[col] = trimmed !== '' && !isNaN(num) ? num : trimmed;
     });
     return row;
   });
