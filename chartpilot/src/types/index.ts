@@ -1,7 +1,59 @@
 export type AppView = 'dashboard' | 'data' | 'code';
 
 export type ChartType = 'bar' | 'line' | 'pie' | 'doughnut' | 'radar' | 'scatter';
-export type DataSourceType = 'manual' | 'csv' | 'api' | 'dataverse';
+export type DataSourceType = 'manual' | 'csv' | 'api' | 'dataverse' | 'graph' | 'sharepoint' | 'azure-blob';
+export type ApiProvider = 'dataverse' | 'graph' | 'sharepoint' | 'azure-blob' | 'api';
+export type AuthType = 'none' | 'bearer' | 'basic' | 'apikey';
+
+export interface RequestHeader {
+  key: string;
+  value: string;
+}
+
+// ── Data Transform types ─────────────────────────────────────────────────────
+
+export type FilterOperator =
+  | 'eq' | 'neq'
+  | 'gt' | 'gte'
+  | 'lt' | 'lte'
+  | 'contains' | 'not_contains';
+
+export type AggregateFunction = 'count' | 'sum' | 'avg' | 'min' | 'max';
+export type SortDirection = 'asc' | 'desc';
+
+export interface FilterTransform {
+  type: 'filter';
+  column: string;
+  operator: FilterOperator;
+  value: string;
+}
+
+export interface SortTransform {
+  type: 'sort';
+  column: string;
+  direction: SortDirection;
+}
+
+export interface TopNTransform {
+  type: 'topN';
+  n: number;
+  column?: string;
+  direction?: SortDirection;
+}
+
+export interface GroupAggregateTransform {
+  type: 'groupAggregate';
+  groupBy: string;
+  aggregations: { column: string; fn: AggregateFunction; alias?: string }[];
+}
+
+export type DataTransform =
+  | FilterTransform
+  | SortTransform
+  | TopNTransform
+  | GroupAggregateTransform;
+
+// ── Core data types ───────────────────────────────────────────────────────────
 
 export interface DataRow {
   [key: string]: string | number;
@@ -13,8 +65,18 @@ export interface DataSource {
   type: DataSourceType;
   columns: string[];
   rows: DataRow[];
+  // API connection config (used for api, dataverse, graph, sharepoint, azure-blob)
   apiUrl?: string;
   dataverseUrl?: string;
+  authType?: AuthType;
+  bearerToken?: string;
+  basicUser?: string;
+  basicPass?: string;
+  apiKeyHeader?: string;
+  apiKeyValue?: string;
+  customHeaders?: RequestHeader[];
+  // Data transforms applied after loading
+  transforms?: DataTransform[];
   lastFetched?: string;
 }
 
