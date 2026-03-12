@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import GridLayout from 'react-grid-layout';
 import type { Layout, LayoutItem } from 'react-grid-layout';
-import { Plus } from 'lucide-react';
+import { Filter, Plus, X } from 'lucide-react';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { useShallow } from 'zustand/react/shallow';
@@ -11,13 +11,16 @@ import WidgetCard from '../widgets/WidgetCard';
 import AddWidgetModal from '../modals/AddWidgetModal';
 
 export default function DashboardView() {
-  const { widgets, dataSources, updateLayouts } = useDashboardStore(
+  const { widgets, dataSources, updateLayouts, canvasSettings } = useDashboardStore(
     useShallow((s) => ({
       widgets: s.widgets,
       dataSources: s.dataSources,
       updateLayouts: s.updateLayouts,
+      canvasSettings: s.canvasSettings,
     })),
   );
+  const crossFilter = useDashboardStore((s) => s.crossFilter);
+  const setCrossFilter = useDashboardStore((s) => s.setCrossFilter);
   const { selectWidget } = useUiStore();
 
   const [showAdd, setShowAdd] = useState(false);
@@ -74,10 +77,20 @@ export default function DashboardView() {
     );
   }
 
+  const canvasBgStyle: React.CSSProperties = {
+    ...(canvasSettings?.backgroundColor && { backgroundColor: canvasSettings.backgroundColor }),
+    ...(canvasSettings?.backgroundImage && {
+      backgroundImage: `url(${canvasSettings.backgroundImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }),
+  };
+
   return (
     <div
       ref={containerRef}
       className="cp-dashboard-canvas"
+      style={canvasBgStyle}
       onClick={(e) => {
         if (e.target === e.currentTarget) selectWidget(null);
       }}
@@ -86,6 +99,18 @@ export default function DashboardView() {
         <button className="cp-btn" onClick={() => setShowAdd(true)}>
           <Plus size={14} /> Add Widget
         </button>
+        {crossFilter && (
+          <button
+            className="cp-btn cp-btn-sm"
+            style={{ marginLeft: 8, display: 'inline-flex', alignItems: 'center', gap: 4 }}
+            onClick={() => setCrossFilter(null)}
+            title="Clear cross-filter"
+          >
+            <Filter size={12} />
+            {crossFilter.column}: {String(crossFilter.value)}
+            <X size={12} />
+          </button>
+        )}
       </div>
 
       <GridLayout

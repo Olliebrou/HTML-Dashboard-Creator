@@ -53,13 +53,43 @@ export default function PropertiesPanel() {
   const [newFilterOp, setNewFilterOp] = useState<FilterOperator>('eq');
   const [newFilterVal, setNewFilterVal] = useState('');
 
+  const canvasSettings = useDashboardStore((s) => s.canvasSettings);
+  const updateCanvasSettings = useDashboardStore((s) => s.updateCanvasSettings);
+
   const widget = widgets.find((w) => w.id === selectedWidgetId);
 
   if (!widget) {
     return (
       <div className="cp-properties">
-        <Panel title="Properties">
-          <p className="cp-muted" style={{ lineHeight: 1.6 }}>
+        <Panel title="Canvas Settings">
+          <div className="cp-prop-group">
+            <label className="cp-form-label">Background Color</label>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                type="color"
+                value={canvasSettings?.backgroundColor ?? '#0b1221'}
+                onChange={(e) => updateCanvasSettings({ backgroundColor: e.target.value })}
+                style={{ width: 36, height: 28, border: 'none', background: 'none', cursor: 'pointer' }}
+              />
+              <input
+                className="cp-input"
+                value={canvasSettings?.backgroundColor ?? ''}
+                onChange={(e) => updateCanvasSettings({ backgroundColor: e.target.value })}
+                placeholder="Default"
+                style={{ flex: 1 }}
+              />
+            </div>
+          </div>
+          <div className="cp-prop-group">
+            <label className="cp-form-label">Background Image URL</label>
+            <input
+              className="cp-input"
+              value={canvasSettings?.backgroundImage ?? ''}
+              onChange={(e) => updateCanvasSettings({ backgroundImage: e.target.value })}
+              placeholder="https://example.com/bg.jpg"
+            />
+          </div>
+          <p className="cp-muted" style={{ lineHeight: 1.6, marginTop: 12 }}>
             Click a widget on the canvas to edit its settings.
           </p>
         </Panel>
