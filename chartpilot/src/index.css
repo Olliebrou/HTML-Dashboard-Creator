@@ -1353,3 +1353,174 @@ html, body, #root {
 .cp-preview-table tr:hover td {
   background: var(--bg-elevated);
 }
+
+/* ── Text / KPI Widget ── */
+.cp-text-widget {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+}
+.cp-text-widget-value {
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+/* ── Table Widget ── */
+.cp-table-widget {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.cp-table-scroll {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}
+.cp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.cp-table th,
+.cp-table td {
+  padding: 6px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+.cp-table th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  z-index: 1;
+  cursor: default;
+  user-select: none;
+}
+.cp-table th.cp-table-sortable {
+  cursor: pointer;
+}
+.cp-table th.cp-table-sortable:hover {
+  color: var(--text);
+}
+.cp-table-sort-icon {
+  display: inline-flex;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.cp-table tbody tr:hover {
+  background: rgba(78, 129, 183, 0.08);
+}
+.cp-table td.cp-table-clickable {
+  cursor: pointer;
+}
+.cp-table td.cp-table-clickable:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.cp-table-filter-row th {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+}
+.cp-table-filter-select {
+  width: 100%;
+  padding: 3px 6px;
+  font-size: 11px;
+  background: var(--bg-surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.cp-table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.cp-table-page-info {
+  font-size: 12px;
+  font-weight: 600;
+}
+.cp-table-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ── Cross-filter indicator ── */
+.cp-cross-filter-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  background: rgba(78, 129, 183, 0.15);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.cp-cross-filter-indicator button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 14px;
+  line-height: 1;
+}
+.cp-cross-filter-indicator button:hover {
+  color: var(--text);
+}
+
+/* ── Widget-level filter rows (Properties Panel) ── */
+.cp-widget-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  margin-bottom: 4px;
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  font-size: 12px;
+}
+.cp-widget-filter-desc {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+.cp-widget-filter-add {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+.cp-widget-filter-add .cp-select,
+.cp-widget-filter-add .cp-input {
+  font-size: 12px;
+  padding: 4px 6px;
+}
+
+/* ── Canvas settings in properties panel ── */
+.cp-canvas-settings .cp-prop-group {
+  margin-bottom: 12px;
+}
