@@ -102,13 +102,14 @@ function applyTopN(
 ): TransformResult {
   let working = [...rows];
   if (t.column) {
+    const col = t.column;
     const dir = t.direction ?? 'desc';
     working = working.sort((a, b) => {
-      const an = Number(a[t.column!]);
-      const bn = Number(b[t.column!]);
+      const an = Number(a[col]);
+      const bn = Number(b[col]);
       const cmp = !isNaN(an) && !isNaN(bn)
         ? an - bn
-        : String(a[t.column!] ?? '').localeCompare(String(b[t.column!] ?? ''));
+        : String(a[col] ?? '').localeCompare(String(b[col] ?? ''));
       return dir === 'asc' ? cmp : -cmp;
     });
   }

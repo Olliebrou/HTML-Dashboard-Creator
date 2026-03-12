@@ -10,6 +10,8 @@ import type {
 import { useDashboardStore } from '../../stores/dashboardStore';
 import { applyTransforms } from '../../lib/dataTransform';
 
+const PREVIEW_ROW_LIMIT = 5;
+
 interface Props {
   dataSource: DataSource;
   onClose: () => void;
@@ -87,7 +89,7 @@ export default function TransformModal({ dataSource, onClose }: Props) {
     return applyTransforms(dataSource.rows, dataSource.columns, transforms);
   }, [dataSource.rows, dataSource.columns, transforms]);
 
-  const previewRows = preview.rows.slice(0, 6);
+  const previewRows = preview.rows.slice(0, PREVIEW_ROW_LIMIT);
 
   // ── Add transform ────────────────────────────────────────────────────────────
 

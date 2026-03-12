@@ -20,7 +20,7 @@ export function parseDataverseJson(jsonText: string): DataverseParseResult {
   try {
     parsed = JSON.parse(jsonText);
   } catch {
-    return { columns: [], rows: [], error: 'Invalid JSON — please paste valid JSON output from your Dataverse API.' };
+    return { columns: [], rows: [], error: 'Invalid JSON — paste a valid JSON array or OData response ({ "value": [...] }).' };
   }
 
   // Normalise to an array of records

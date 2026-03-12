@@ -170,7 +170,7 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
     if (authType === 'bearer' && bearerToken.trim()) {
       h['Authorization'] = `Bearer ${bearerToken.trim()}`;
     } else if (authType === 'basic' && basicUser.trim()) {
-      h['Authorization'] = `Basic ${btoa(`${basicUser}:${basicPass}`)}`;
+      h['Authorization'] = `Basic ${btoa(unescape(encodeURIComponent(`${basicUser}:${basicPass}`)))}`;
     } else if (authType === 'apikey' && apiKeyHeader.trim() && apiKeyValue.trim()) {
       h[apiKeyHeader.trim()] = apiKeyValue.trim();
     }
@@ -272,7 +272,7 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
             Choose where your data comes from. You can always add more sources later.
           </p>
 
-          <div className="cp-source-group-label">📁 File &amp; Manual</div>
+          <div className="cp-source-group-label">📁 File & Manual</div>
           <div className="cp-source-picker">
             {fileSources.map((s) => (
               <button
