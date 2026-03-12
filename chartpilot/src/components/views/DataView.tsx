@@ -100,6 +100,14 @@ export default function DataView() {
                       <SlidersHorizontal size={10} /> {tCount} transform{tCount !== 1 ? 's' : ''}
                     </span>
                   )}
+                  {(() => {
+                    const staticFlag = typeof ds.isStatic === 'boolean'
+                      ? ds.isStatic
+                      : (ds.type === 'manual' || ds.type === 'csv');
+                    return staticFlag
+                      ? <span className="cp-ds-static-badge">Embedded in export</span>
+                      : <span className="cp-ds-live-badge">Live — not exported</span>;
+                  })()}
                   {ds.lastFetched && (
                     <span>Updated {new Date(ds.lastFetched).toLocaleString()}</span>
                   )}
