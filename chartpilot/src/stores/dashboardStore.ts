@@ -3,6 +3,8 @@ import type { DashboardState, DashboardSnapshot, WidgetConfig, WidgetLayout, Dat
 
 const MAX_HISTORY_SIZE = 50;
 
+const DEFAULT_CANVAS_SETTINGS = { backgroundColor: '', backgroundImage: '' } as const;
+
 function newId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
@@ -16,6 +18,7 @@ function snapshot(s: DashboardState): DashboardSnapshot {
     meta: s.meta,
     widgets: s.widgets,
     dataSources: s.dataSources,
+    canvasSettings: s.canvasSettings,
   };
 }
 
@@ -37,8 +40,10 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   },
   widgets: [],
   dataSources: [],
+  canvasSettings: { ...DEFAULT_CANVAS_SETTINGS },
   past: [],
   future: [],
+  crossFilter: null,
 
   // ── Meta ──────────────────────────────────────────────────────────────────
 
@@ -104,6 +109,19 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       meta: { ...s.meta, updatedAt: new Date().toISOString() },
     })),
 
+  // ── Canvas ────────────────────────────────────────────────────────────────
+
+  updateCanvasSettings: (patch) =>
+    set((s) => ({
+      ...pushHistory(s, snapshot(s)),
+      canvasSettings: { ...(s.canvasSettings ?? DEFAULT_CANVAS_SETTINGS), ...patch },
+      meta: { ...s.meta, updatedAt: new Date().toISOString() },
+    })),
+
+  // ── Cross-filter ──────────────────────────────────────────────────────────
+
+  setCrossFilter: (filter) => set({ crossFilter: filter }),
+
   // ── History ───────────────────────────────────────────────────────────────
 
   undo: () => {
@@ -138,6 +156,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       meta: data.meta,
       widgets: data.widgets,
       dataSources: data.dataSources,
+      canvasSettings: data.canvasSettings ?? { ...DEFAULT_CANVAS_SETTINGS },
     })),
 
   exportSnapshot: () => snapshot(get()),

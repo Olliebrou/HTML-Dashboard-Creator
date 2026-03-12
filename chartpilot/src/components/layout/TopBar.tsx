@@ -1,4 +1,4 @@
-import { Undo2, Redo2, Play, Download, Upload, PanelRightOpen, PanelRightClose, Sun, Moon, X } from 'lucide-react';
+import { Undo2, Redo2, Play, Download, Upload, PanelRightOpen, PanelRightClose, Sun, Moon, X, Filter } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
@@ -28,6 +28,8 @@ export default function TopBar({ title, onTitleChange, rightPanelOpen, onToggleP
       importDashboard: s.importDashboard,
     })),
   );
+  const crossFilter = useDashboardStore((s) => s.crossFilter);
+  const setCrossFilter = useDashboardStore((s) => s.setCrossFilter);
   const { previewMode, setPreviewMode } = useUiStore();
 
   const toggleTheme = () => {
@@ -129,6 +131,21 @@ export default function TopBar({ title, onTitleChange, rightPanelOpen, onToggleP
         >
           <Play size={16} />
         </button>
+        {crossFilter && (
+          <>
+            <span className="cp-topbar-divider" />
+            <button
+              className="cp-btn cp-btn-sm"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12 }}
+              onClick={() => setCrossFilter(null)}
+              title="Clear cross-filter"
+            >
+              <Filter size={12} />
+              {crossFilter.column}: {String(crossFilter.value)}
+              <X size={12} />
+            </button>
+          </>
+        )}
       </div>
 
       <div className="cp-topbar-right">

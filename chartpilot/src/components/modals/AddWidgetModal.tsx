@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BarChart2, TrendingUp, PieChart, Donut, Radar, ScatterChart } from 'lucide-react';
+import { BarChart2, TrendingUp, PieChart, Donut, Radar, ScatterChart, Type, Table2 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import Modal from '../common/Modal';
 import type { ChartType, WidgetConfig } from '../../types';
@@ -13,6 +13,8 @@ const CHART_TYPES: { type: ChartType; label: string; Icon: React.ComponentType<{
   { type: 'doughnut', label: 'Doughnut', Icon: Donut },
   { type: 'radar', label: 'Radar', Icon: Radar },
   { type: 'scatter', label: 'Scatter', Icon: ScatterChart },
+  { type: 'text' as ChartType, label: 'Text / KPI', Icon: Type },
+  { type: 'table' as ChartType, label: 'Table', Icon: Table2 },
 ];
 
 interface Props {

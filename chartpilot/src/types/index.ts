@@ -1,6 +1,6 @@
 export type AppView = 'dashboard' | 'data' | 'code';
 
-export type ChartType = 'bar' | 'line' | 'pie' | 'doughnut' | 'radar' | 'scatter';
+export type ChartType = 'bar' | 'line' | 'pie' | 'doughnut' | 'radar' | 'scatter' | 'text' | 'table';
 export type DataSourceType = 'manual' | 'csv' | 'api' | 'dataverse' | 'graph' | 'sharepoint' | 'azure-blob';
 export type ApiProvider = 'dataverse' | 'graph' | 'sharepoint' | 'azure-blob' | 'api';
 export type AuthType = 'none' | 'bearer' | 'basic' | 'apikey';
@@ -83,6 +83,17 @@ export interface DataSource {
   isStatic?: boolean;
 }
 
+export interface CanvasSettings {
+  backgroundColor: string;
+  backgroundImage: string;
+}
+
+export interface CrossFilter {
+  sourceWidgetId: string;
+  column: string;
+  value: string | number;
+}
+
 export interface WidgetLayout {
   x: number;
   y: number;
@@ -99,6 +110,24 @@ export interface WidgetConfig {
   valueColumns: string[];
   colors: string[];
   layout: WidgetLayout;
+  // Per-widget styling
+  backgroundColor?: string;
+  titleColor?: string;
+  borderColor?: string;
+  // Per-widget transforms applied after data source transforms
+  widgetTransforms?: DataTransform[];
+  // Text widget specific
+  textContent?: string;
+  textValueColumn?: string;
+  textAggregation?: AggregateFunction;
+  textPrefix?: string;
+  textSuffix?: string;
+  textFontSize?: number;
+  // Table widget specific
+  tablePageSize?: number;
+  tableFilterable?: boolean;
+  tableSortable?: boolean;
+  tableVisibleColumns?: string[];
 }
 
 export interface DashboardMeta {
@@ -111,6 +140,7 @@ export interface DashboardSnapshot {
   meta: DashboardMeta;
   widgets: WidgetConfig[];
   dataSources: DataSource[];
+  canvasSettings?: CanvasSettings;
 }
 
 export interface UiState {
@@ -129,6 +159,7 @@ export interface UiState {
 export interface DashboardState extends DashboardSnapshot {
   past: DashboardSnapshot[];
   future: DashboardSnapshot[];
+  crossFilter: CrossFilter | null;
   // Meta
   setTitle: (title: string) => void;
   // Widgets
@@ -140,6 +171,10 @@ export interface DashboardState extends DashboardSnapshot {
   addDataSource: (ds: Omit<DataSource, 'id'>) => void;
   updateDataSource: (id: string, patch: Partial<Omit<DataSource, 'id'>>) => void;
   removeDataSource: (id: string) => void;
+  // Canvas
+  updateCanvasSettings: (patch: Partial<CanvasSettings>) => void;
+  // Cross-filter
+  setCrossFilter: (filter: CrossFilter | null) => void;
   // History
   undo: () => void;
   redo: () => void;
