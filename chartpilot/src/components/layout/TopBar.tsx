@@ -5,6 +5,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useDashboardStore } from '../../stores/dashboardStore';
 import { useUiStore } from '../../stores/uiStore';
 import type { DashboardSnapshot } from '../../types';
+import { generateDashboardHTML, extractSnapshotFromHtml } from '../../lib/htmlExport';
 
 type TopBarProps = {
   title: string;
@@ -35,15 +36,16 @@ export default function TopBar({ title, onTitleChange, rightPanelOpen, onToggleP
   };
 
   const handleExport = () => {
-    const data = exportSnapshot();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const snapshot = exportSnapshot();
+    const html = generateDashboardHTML(snapshot);
+    const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${title.replace(/\s+/g, '-').toLowerCase() || 'dashboard'}.json`;
+    a.download = `${title.replace(/\s+/g, '-').toLowerCase() || 'dashboard'}.html`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Dashboard exported');
+    toast.success('Dashboard exported as HTML');
   };
 
   const handleImport = () => importRef.current?.click();
@@ -54,10 +56,22 @@ export default function TopBar({ title, onTitleChange, rightPanelOpen, onToggleP
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
-        const parsed = JSON.parse(ev.target?.result as string) as DashboardSnapshot;
-        if (!parsed.meta || !Array.isArray(parsed.widgets) || !Array.isArray(parsed.dataSources)) {
-          throw new Error('Invalid dashboard file');
+        const content = ev.target?.result as string;
+        let parsed: DashboardSnapshot;
+
+        if (file.name.endsWith('.html') || file.type === 'text/html') {
+          // Extract embedded snapshot from HTML export
+          const snap = extractSnapshotFromHtml(content);
+          if (!snap) throw new Error('No dashboard snapshot found in HTML file');
+          parsed = snap;
+        } else {
+          // Legacy JSON import
+          parsed = JSON.parse(content) as DashboardSnapshot;
+          if (!parsed.meta || !Array.isArray(parsed.widgets) || !Array.isArray(parsed.dataSources)) {
+            throw new Error('Invalid dashboard file');
+          }
         }
+
         importDashboard(parsed);
         toast.success('Dashboard imported');
       } catch (err) {
@@ -118,10 +132,10 @@ export default function TopBar({ title, onTitleChange, rightPanelOpen, onToggleP
       </div>
 
       <div className="cp-topbar-right">
-        <button className="cp-icon-btn" title="Import dashboard JSON" onClick={handleImport}>
+        <button className="cp-icon-btn" title="Import dashboard (HTML or JSON)" onClick={handleImport}>
           <Upload size={16} />
         </button>
-        <button className="cp-icon-btn" title="Export dashboard JSON" onClick={handleExport}>
+        <button className="cp-icon-btn" title="Export dashboard as HTML" onClick={handleExport}>
           <Download size={16} />
         </button>
         <span className="cp-topbar-divider" />
@@ -136,11 +150,10 @@ export default function TopBar({ title, onTitleChange, rightPanelOpen, onToggleP
       <input
         ref={importRef}
         type="file"
-        accept=".json,application/json"
+        accept=".html,.json,text/html,application/json"
         style={{ display: 'none' }}
         onChange={handleImportFile}
       />
     </header>
   );
 }
-

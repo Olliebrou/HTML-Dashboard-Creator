@@ -78,6 +78,9 @@ export interface DataSource {
   // Data transforms applied after loading
   transforms?: DataTransform[];
   lastFetched?: string;
+  // When true, rows are baked into the exported HTML. Defaults to true for
+  // manual/csv sources and false for live API sources.
+  isStatic?: boolean;
 }
 
 export interface WidgetLayout {

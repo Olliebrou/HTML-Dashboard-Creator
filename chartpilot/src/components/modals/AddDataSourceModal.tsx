@@ -121,6 +121,12 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
   // Shared fields
   const [name, setName] = useState(existing?.name ?? '');
 
+  // Static export flag — manual/csv default true; API sources default false
+  const defaultIsStatic = (t: DataSourceType) => t === 'manual' || t === 'csv';
+  const [isStatic, setIsStatic] = useState<boolean>(
+    typeof existing?.isStatic === 'boolean' ? existing.isStatic : defaultIsStatic(existing?.type ?? 'manual'),
+  );
+
   // CSV / Manual
   const [csvText, setCsvText] = useState<string>(
     existing?.type === 'manual' || existing?.type === 'csv'
@@ -215,7 +221,7 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
     if (sourceType === 'manual' || sourceType === 'csv') {
       const { columns, rows, error } = parseCSV(csvText || MANUAL_PLACEHOLDER);
       if (error && columns.length === 0) { toast.error(`CSV error: ${error}`); return; }
-      dsData = { name: finalName, type: sourceType, columns, rows, lastFetched: new Date().toISOString() };
+      dsData = { name: finalName, type: sourceType, columns, rows, isStatic, lastFetched: new Date().toISOString() };
     } else {
       // API-based sources — parse the pasted/fetched JSON
       const { columns, rows, error } = parseDataverseJson(pastedJson);
@@ -241,6 +247,7 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
         apiUrl: apiUrl.trim() || undefined,
         dataverseUrl: sourceType === 'dataverse' ? (apiUrl.trim() || undefined) : undefined,
         ...sharedApiConfig,
+        isStatic,
         lastFetched: new Date().toISOString(),
         transforms: existing?.transforms,
       };
@@ -278,7 +285,7 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
               <button
                 key={s.id}
                 className={`cp-source-card${sourceType === s.id ? ' active' : ''}`}
-                onClick={() => setSourceType(s.id)}
+                onClick={() => { setSourceType(s.id); setIsStatic(defaultIsStatic(s.id)); }}
               >
                 <s.Icon size={22} />
                 <span className="cp-source-card-label">{s.label}</span>
@@ -293,7 +300,7 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
               <button
                 key={s.id}
                 className={`cp-source-card${sourceType === s.id ? ' active' : ''}`}
-                onClick={() => setSourceType(s.id)}
+                onClick={() => { setSourceType(s.id); setIsStatic(defaultIsStatic(s.id)); }}
               >
                 <s.Icon size={22} />
                 <span className="cp-source-card-label">{s.label}</span>
@@ -582,6 +589,21 @@ export default function AddDataSourceModal({ existing, onClose }: Props) {
               </div>
             </>
           )}
+
+          <div className="cp-static-toggle">
+            <label className="cp-static-toggle-label">
+              <input
+                type="checkbox"
+                checked={isStatic}
+                onChange={(e) => setIsStatic(e.target.checked)}
+              />
+              <span>Include data in HTML export</span>
+            </label>
+            <p className="cp-helper-text" style={{ marginTop: 2 }}>
+              When checked, this source's rows are baked into the exported HTML file.
+              Uncheck for live API sources whose data should not be embedded.
+            </p>
+          </div>
 
           <div className="cp-modal-footer">
             <button className="cp-btn" onClick={onClose}>Cancel</button>
