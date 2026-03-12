@@ -1,5 +1,6 @@
 import type { ChartData } from 'chart.js';
 import type { WidgetConfig, DataSource, ChartType } from '../types';
+import { applyTransforms } from './dataTransform';
 
 const SAMPLE_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
 const SAMPLE_DATA = [65, 59, 80, 81, 56, 72];
@@ -26,22 +27,32 @@ export function buildChartData(
     return buildSampleData(widget.type, widget.title, colors);
   }
 
-  const labelCol = widget.labelColumn ?? source.columns[0];
+  // Apply any transforms stored on the data source
+  const { rows, columns } =
+    source.transforms && source.transforms.length > 0
+      ? applyTransforms(source.rows, source.columns, source.transforms)
+      : { rows: source.rows, columns: source.columns };
+
+  if (rows.length === 0) {
+    return buildSampleData(widget.type, widget.title, colors);
+  }
+
+  const labelCol = widget.labelColumn ?? columns[0];
   const valueCols =
     widget.valueColumns.length > 0
-      ? widget.valueColumns
-      : source.columns.filter((c) => c !== labelCol).slice(0, 3);
+      ? widget.valueColumns.filter((c) => columns.includes(c))
+      : columns.filter((c) => c !== labelCol).slice(0, 3);
 
-  const labels = source.rows.map((row) => String(row[labelCol] ?? ''));
+  const labels = rows.map((row) => String(row[labelCol] ?? ''));
 
   if (widget.type === 'scatter') {
     const xCol = labelCol;
-    const yCol = valueCols[0] ?? source.columns[1] ?? source.columns[0];
+    const yCol = valueCols[0] ?? columns[1] ?? columns[0];
     return {
       datasets: [
         {
           label: widget.title,
-          data: source.rows.map((row) => ({
+          data: rows.map((row) => ({
             x: Number(row[xCol]) || 0,
             y: Number(row[yCol]) || 0,
           })),
@@ -68,7 +79,7 @@ export function buildChartData(
 
     return {
       label: col,
-      data: source.rows.map((row) => Number(row[col]) || 0),
+      data: rows.map((row) => Number(row[col]) || 0),
       backgroundColor: bg,
       borderColor: widget.type === 'pie' || widget.type === 'doughnut' ? '#1a2332' : color,
       borderWidth: widget.type === 'pie' || widget.type === 'doughnut' ? 2 : 2,
